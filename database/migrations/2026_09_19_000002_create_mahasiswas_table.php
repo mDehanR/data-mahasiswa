@@ -15,7 +15,7 @@ return new class extends Migration
             $table->enum('jenis_kelamin', ['L', 'P']);
             $table->text('alamat');
             $table->string('foto_mahasiswa')->nullable();
-            $table->foreignId('prodi_id')->constrained('prodis')->cascadeOnDelete();
+            $table->foreignId('prodi_id')->constrained('prodis')->restrictOnDelete();
             $table->timestamps();
         });
     }

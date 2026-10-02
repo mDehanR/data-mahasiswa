@@ -19,6 +19,7 @@
 
     <section class="mx-auto max-w-7xl px-5 py-8 sm:px-8">
         @if (session('success')) <div class="mb-5 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">{{ session('success') }}</div> @endif
+        @if (session('error')) <div class="mb-5 rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">{{ session('error') }}</div> @endif
         <div class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
             <div class="flex flex-col gap-2 border-b border-slate-200 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
@@ -33,12 +34,12 @@
                     <thead class="bg-slate-50 text-xs uppercase tracking-wider text-slate-500">
                         <tr>
                             <th scope="col" class="px-5 py-4 font-semibold">No</th>
+                            <th scope="col" class="px-5 py-4 font-semibold">Foto Mahasiswa</th>
                             <th scope="col" class="px-5 py-4 font-semibold">NIM</th>
                             <th scope="col" class="px-5 py-4 font-semibold">Nama</th>
-                            <th scope="col" class="px-5 py-4 font-semibold">JK</th>
+                            <th scope="col" class="px-5 py-4 font-semibold">Jenis Kelamin</th>
                             <th scope="col" class="px-5 py-4 font-semibold">Alamat</th>
-                            <th scope="col" class="px-5 py-4 font-semibold">Foto Mahasiswa</th>
-                            <th scope="col" class="px-5 py-4 font-semibold">Prodi ID</th>
+                            <th scope="col" class="px-5 py-4 font-semibold">Program Studi</th>
                             <th scope="col" class="px-5 py-4 text-center font-semibold">Aksi</th>
                         </tr>
                     </thead>
@@ -46,14 +47,17 @@
                         @forelse ($mahasiswas as $mahasiswa)
                             <tr class="transition hover:bg-blue-50/40">
                                 <td class="whitespace-nowrap px-5 py-4 text-slate-400">{{ $mahasiswas->firstItem() + $loop->index }}</td>
+                                <td class="px-5 py-4">@if ($mahasiswa->foto_mahasiswa)<img src="{{ asset('storage/' . $mahasiswa->foto_mahasiswa) }}" alt="Foto {{ $mahasiswa->nama_mahasiswa }}" class="h-12 w-12 rounded-lg object-cover ring-1 ring-slate-200">@else<span class="text-slate-400">-</span>@endif</td>
                                 <td class="whitespace-nowrap px-5 py-4 font-semibold text-navy">{{ $mahasiswa->nim }}</td>
                                 <td class="whitespace-nowrap px-5 py-4 font-medium text-slate-700">{{ $mahasiswa->nama_mahasiswa }}</td>
-                                <td class="px-5 py-4"><span class="inline-flex h-7 w-7 items-center justify-center rounded-full bg-slate-100 text-xs font-bold text-slate-600">{{ $mahasiswa->jenis_kelamin }}</span></td>
+                                <td class="px-5 py-4 text-slate-600">{{ $mahasiswa->jenis_kelamin === 'L' ? 'Laki-laki' : 'Perempuan' }}</td>
                                 <td class="max-w-xs px-5 py-4 text-slate-600">{{ $mahasiswa->alamat }}</td>
-                                <td class="px-5 py-4">@if ($mahasiswa->foto_mahasiswa)<img src="{{ asset($mahasiswa->foto_mahasiswa) }}" alt="Foto {{ $mahasiswa->nama_mahasiswa }}" class="h-12 w-12 rounded-lg object-cover ring-1 ring-slate-200">@else<span class="text-slate-400">-</span>@endif</td>
-                                <td class="px-5 py-4 text-slate-600"><span class="font-semibold text-navy">{{ $mahasiswa->prodi_id }}</span><span class="block text-xs text-slate-400">{{ $mahasiswa->prodi?->nama_prodi ?? 'Prodi tidak ditemukan' }}</span></td>
+                                <td class="px-5 py-4 font-semibold text-navy">{{ $mahasiswa->prodi?->nama_prodi ?? 'Tanpa prodi' }}</td>
                                 <td class="px-5 py-4">
                                     <div class="flex justify-center gap-2">
+                                        <a href="{{ route('mahasiswa.show', $mahasiswa) }}" title="Detail mahasiswa" aria-label="Detail mahasiswa" class="rounded-lg p-2 text-slate-600 transition hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-slate-300">
+                                            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M2.5 12s3.5-7 9.5-7 9.5 7 9.5 7-3.5 7-9.5 7-9.5-7-9.5-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+                                        </a>
                                         <a href="{{ route('mahasiswa.edit', $mahasiswa) }}" title="Edit mahasiswa" aria-label="Edit mahasiswa" class="rounded-lg p-2 text-campus transition hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-300">
                                             <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 20h9"/><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5Z"/></svg>
                                         </a>
@@ -68,7 +72,7 @@
                                 </td>
                             </tr>
                         @empty
-                            <tr><td colspan="6" class="px-5 py-12 text-center text-slate-500">Belum ada data mahasiswa.</td></tr>
+                            <tr><td colspan="8" class="px-5 py-12 text-center text-slate-500">Belum ada data mahasiswa.</td></tr>
                         @endforelse
                     </tbody>
                 </table>

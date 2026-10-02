@@ -6,6 +6,7 @@ use App\Models\Mahasiswa;
 use App\Models\Prodi;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
 class MahasiswaController extends Controller
@@ -22,9 +23,19 @@ class MahasiswaController extends Controller
         return view('mahasiswa.create', ['prodis' => Prodi::orderBy('nama_prodi')->get()]);
     }
 
+    public function show(Mahasiswa $mahasiswa): View
+    {
+        $mahasiswa->load(['prodi', 'mataKuliahs']);
+
+        return view('mahasiswa.show', compact('mahasiswa'));
+    }
+
     public function store(Request $request): RedirectResponse
     {
-        Mahasiswa::create($request->validate($this->rules()));
+        $data = $request->validate($this->rules());
+        $data['foto_mahasiswa'] = $request->file('foto_mahasiswa')?->store('mahasiswa', 'public');
+
+        Mahasiswa::create($data);
 
         return to_route('mahasiswa.index')->with('success', 'Data mahasiswa berhasil ditambahkan.');
     }
@@ -36,13 +47,29 @@ class MahasiswaController extends Controller
 
     public function update(Request $request, Mahasiswa $mahasiswa): RedirectResponse
     {
-        $mahasiswa->update($request->validate($this->rules($mahasiswa)));
+        $data = $request->validate($this->rules($mahasiswa));
+
+        if ($request->hasFile('foto_mahasiswa')) {
+            if ($mahasiswa->foto_mahasiswa) {
+                Storage::disk('public')->delete($mahasiswa->foto_mahasiswa);
+            }
+
+            $data['foto_mahasiswa'] = $request->file('foto_mahasiswa')->store('mahasiswa', 'public');
+        } else {
+            unset($data['foto_mahasiswa']);
+        }
+
+        $mahasiswa->update($data);
 
         return to_route('mahasiswa.index')->with('success', 'Data mahasiswa berhasil diperbarui.');
     }
 
     public function destroy(Mahasiswa $mahasiswa): RedirectResponse
     {
+        if ($mahasiswa->foto_mahasiswa) {
+            Storage::disk('public')->delete($mahasiswa->foto_mahasiswa);
+        }
+
         $mahasiswa->delete();
 
         return to_route('mahasiswa.index')->with('success', 'Data mahasiswa berhasil dihapus.');
@@ -55,8 +82,8 @@ class MahasiswaController extends Controller
             'nama_mahasiswa' => ['required', 'string', 'max:255'],
             'jenis_kelamin' => ['required', 'in:L,P'],
             'alamat' => ['required', 'string'],
-            'foto_mahasiswa' => ['nullable', 'string', 'max:255'],
-            'prodi_id' => ['required', 'exists:prodis,id'],
+            'foto_mahasiswa' => ['nullable', 'image', 'max:2048'],
+            'prodi_id' => ['nullable', 'exists:prodis,id'],
         ];
     }
 }

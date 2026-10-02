@@ -15,7 +15,7 @@ class MataKuliahController extends Controller
     public function index(): View
     {
         return view('mata-kuliah.index', [
-            'mataKuliahs' => MataKuliah::with(['mahasiswa', 'prodi'])->latest()->paginate(10),
+            'mataKuliahs' => MataKuliah::with(['mahasiswas', 'prodi'])->latest()->paginate(10),
         ]);
     }
 
@@ -27,9 +27,21 @@ class MataKuliahController extends Controller
         ]);
     }
 
+    public function show(MataKuliah $mataKuliah): View
+    {
+        $mataKuliah->load(['mahasiswas.prodi', 'prodi']);
+
+        return view('mata-kuliah.show', compact('mataKuliah'));
+    }
+
     public function store(Request $request): RedirectResponse
     {
-        MataKuliah::create($request->validate($this->rules()));
+        $data = $request->validate($this->rules());
+        $mahasiswaIds = $data['mahasiswa_ids'];
+        unset($data['mahasiswa_ids']);
+
+        $mataKuliah = MataKuliah::create($data);
+        $mataKuliah->mahasiswas()->sync($mahasiswaIds);
 
         return to_route('mata-kuliah.index')->with('success', 'Mata kuliah berhasil ditambahkan.');
     }
@@ -37,7 +49,7 @@ class MataKuliahController extends Controller
     public function edit(MataKuliah $mataKuliah): View
     {
         return view('mata-kuliah.edit', [
-            'mataKuliah' => $mataKuliah,
+            'mataKuliah' => $mataKuliah->load('mahasiswas'),
             'mahasiswas' => Mahasiswa::with('prodi')->orderBy('nama_mahasiswa')->get(),
             'prodis' => Prodi::orderBy('nama_prodi')->get(),
         ]);
@@ -45,7 +57,12 @@ class MataKuliahController extends Controller
 
     public function update(Request $request, MataKuliah $mataKuliah): RedirectResponse
     {
-        $mataKuliah->update($request->validate($this->rules()));
+        $data = $request->validate($this->rules());
+        $mahasiswaIds = $data['mahasiswa_ids'];
+        unset($data['mahasiswa_ids']);
+
+        $mataKuliah->update($data);
+        $mataKuliah->mahasiswas()->sync($mahasiswaIds);
 
         return to_route('mata-kuliah.index')->with('success', 'Mata kuliah berhasil diperbarui.');
     }
@@ -62,17 +79,9 @@ class MataKuliahController extends Controller
         return [
             'nama_mata_kuliah' => ['required', 'string', 'max:255'],
             'sks' => ['required', 'integer', 'min:1', 'max:8'],
-            'mahasiswa_id' => ['required', 'exists:mahasiswas,id'],
-            'prodi_id' => [
-                'required',
-                Rule::exists('prodis', 'id'),
-                function (string $attribute, mixed $value, \Closure $fail): void {
-                    $mahasiswa = Mahasiswa::find(request('mahasiswa_id'));
-                    if ($mahasiswa && (int) $mahasiswa->prodi_id !== (int) $value) {
-                        $fail('Prodi harus sama dengan prodi mahasiswa yang dipilih.');
-                    }
-                },
-            ],
+            'mahasiswa_ids' => ['required', 'array', 'min:1'],
+            'mahasiswa_ids.*' => ['required', 'integer', 'distinct', 'exists:mahasiswas,id'],
+            'prodi_id' => ['nullable', Rule::exists('prodis', 'id')],
         ];
     }
 }

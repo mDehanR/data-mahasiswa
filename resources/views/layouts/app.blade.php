@@ -83,14 +83,12 @@
         <aside class="site-sidebar border-b border-blue-900/40 bg-navy text-white shadow-lg shadow-slate-900/10 lg:fixed lg:inset-y-0 lg:left-0 lg:z-20 lg:flex lg:w-72 lg:flex-col lg:border-b-0 lg:border-r lg:border-white/10">
             <div class="flex flex-col gap-6 px-5 py-5 lg:h-full lg:px-6 lg:py-7">
                 <a href="{{ url('/') }}" class="flex items-center gap-3">
-                    <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white/10 text-blue-100 ring-1 ring-white/20" aria-hidden="true">
-                        <svg class="h-7 w-7" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M5 18 24 8l19 10-19 10L5 18Z" fill="currentColor"/>
-                            <path d="M12 22v8c3.7 3.7 7.7 5.5 12 5.5S32.3 33.7 36 30v-8" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
-                            <path d="M43 19v10" stroke="#93C5FD" stroke-width="3" stroke-linecap="round"/>
-                            <path d="M9 37h30" stroke="#93C5FD" stroke-width="3" stroke-linecap="round"/>
-                        </svg>
-                    </span>
+                    <svg class="h-8 w-8 shrink-0 text-blue-100" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                        <path d="M5 18 24 8l19 10-19 10L5 18Z" fill="currentColor"/>
+                        <path d="M12 22v8c3.7 3.7 7.7 5.5 12 5.5S32.3 33.7 36 30v-8" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+                        <path d="M43 19v10" stroke="#93C5FD" stroke-width="3" stroke-linecap="round"/>
+                        <path d="M9 37h30" stroke="#93C5FD" stroke-width="3" stroke-linecap="round"/>
+                    </svg>
                     <span>
                         <span class="block font-display text-lg font-semibold tracking-tight">DATA KAMPUS</span>
                         <span class="block text-xs tracking-[0.2em] text-blue-200">PORTAL AKADEMIK</span>

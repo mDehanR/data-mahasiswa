@@ -12,8 +12,8 @@ return new class extends Migration
             $table->id();
             $table->string('nama_mata_kuliah');
             $table->integer('sks');
-            $table->foreignId('mahasiswa_id')->constrained('mahasiswas')->cascadeOnDelete();
-            $table->foreignId('prodi_id')->constrained('prodis')->cascadeOnDelete();
+            $table->foreignId('mahasiswa_id')->constrained('mahasiswas')->restrictOnDelete();
+            $table->foreignId('prodi_id')->constrained('prodis')->restrictOnDelete();
             $table->timestamps();
         });
     }

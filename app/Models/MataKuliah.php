@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class MataKuliah extends Model
 {
@@ -13,13 +14,12 @@ class MataKuliah extends Model
     protected $fillable = [
         'nama_mata_kuliah',
         'sks',
-        'mahasiswa_id',
         'prodi_id',
     ];
 
-    public function mahasiswa(): BelongsTo
+    public function mahasiswas(): BelongsToMany
     {
-        return $this->belongsTo(Mahasiswa::class);
+        return $this->belongsToMany(Mahasiswa::class, 'mahasiswa_mata_kuliah');
     }
 
     public function prodi(): BelongsTo
